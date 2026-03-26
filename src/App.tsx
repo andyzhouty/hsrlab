@@ -5,6 +5,7 @@ import Home from "./pages/Home.tsx";
 import Formula from "./pages/Formula.tsx";
 import Countdown from "./pages/Countdown.tsx";
 import Links from "./pages/Links.tsx";
+import 'katex/dist/katex.min.css';
 
 type Page = "home" | "formula" | "countdown" | "links";
 

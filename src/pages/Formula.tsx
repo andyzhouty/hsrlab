@@ -19,7 +19,11 @@ function FormulaBlock({ title, children }: FormulaBlockProps) {
 }
 
 export default function Formula() {
-  return (
+    const formula = "\\quad";
+    console.log("formula:", formula);
+    console.log("JSON:", JSON.stringify(formula));
+    // 然后传给组件
+    return (
     <div className="p-4 max-w-8xl mx-auto">
       {/* 网格布局 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -28,19 +32,19 @@ export default function Formula() {
           <p>通用抗性公式：（抗性不能超过该范围）</p>
 
           <BlockMath
-            math={`\\text{抗性系数} = 1 - \\text{抗性} \\quad (-100\\% \\leq \\text{抗性} \\leq 90\\%)`}
+            math={String.raw`\text{抗性系数} = 1 - \text{抗性} \quad (-100\% \leq \text{抗性} \leq 90\%)`}
           />
 
           <p>角色攻击敌人时：</p>
 
           <BlockMath
-            math={`\\text{防御系数} = \\frac{\\text{角色等级} + 20}{(\\text{角色等级}+20)+(\\text{敌人等级}+20) \\times (1-\\text{减防\\%}-\\text{无视防御\\%})}`}
+            math={String.raw`\text{防御系数} = \frac{\text{角色等级} + 20}{(\text{角色等级}+20)+(\text{敌人等级}+20) \times (1-\text{减防\%}-\text{无视防御\%})}`}
           />
 
           <p>敌人攻击角色时：</p>
 
           <BlockMath
-            math={`\\text{防御系数} = \\frac{10 \\times \\text{敌人等级} + 200}{10 \\times \\text{敌人等级} + 200 + \\text{角色防御}}`}
+            math={String.raw`\text{防御系数} = \frac{10 \times \text{敌人等级} + 200}{10 \times \text{敌人等级} + 200 + \text{角色防御}}`}
           />
         </FormulaBlock>
 
@@ -48,16 +52,16 @@ export default function Formula() {
         <FormulaBlock title="常规伤害">
           <p>角色造成的常规伤害：</p>
           <BlockMath
-            math={`\\text{最终伤害} = \\text{基础值} \\times \\text{特殊独立乘区}`}
+            math={String.raw`\text{最终伤害} = \text{基础值} \times \text{特殊独立乘区}`}
           />
           <BlockMath
-            math={`\\times (1+\\text{增伤\\%}) \\times (1+\\text{易伤\\%}) \\times (1-\\text{虚弱\\%})`}
+            math={String.raw`\times (1+\text{增伤\%}) \times (1+\text{易伤\%}) \times (1-\text{虚弱\%})`}
           />
           <BlockMath
-            math={`\\times (1-\\text{减伤1\\%}) \\times (1-\\text{减伤2\\%}) \\times ...`}
+            math={String.raw`\times (1-\text{减伤1\%}) \times (1-\text{减伤2\%}) \times ...`}
           />
           <BlockMath
-            math={`\\times \\text{抗性系数} \\times \\text{防御系数} \\times \\text{暴击区}`}
+            math={String.raw`\times \text{抗性系数} \times \text{防御系数} \times \text{暴击区}`}
           />
           <p>基础值：攻击力 * 倍率（攻击力可替换为生命等）</p>
           <p>增伤：提升我方造成的伤害</p>
@@ -70,21 +74,21 @@ export default function Formula() {
           <p>角色击破弱点时：</p>
 
           <BlockMath
-            math={`\\text{击破伤害} = \\text{击破基础值} \\times \\text{属性倍率}`}
+            math={String.raw`\text{击破伤害} = \text{击破基础值} \times \text{属性倍率}`}
           />
           <BlockMath
-            math={`\\times (1+\\text{易伤\\%})\\times (1+\\text{击破特攻})`}
+            math={String.raw`\times (1+\text{易伤\%})\times (1+\text{击破特攻})`}
           />
-          <BlockMath math={`\\times (1+\\text{击破增伤\\%})`} />
+          <BlockMath math={String.raw`\times (1+\text{击破增伤\%})`} />
           <BlockMath
-            math={`\\times (1-\\text{减伤1\\%}) \\times (1-\\text{减伤2\\%})`}
+            math={String.raw`\times (1-\text{减伤1\%}) \times (1-\text{减伤2\%})`}
           />
           <BlockMath
-            math={`\\times \\text{抗性系数} \\times \\text{防御系数}`}
+            math={String.raw`\times \text{抗性系数} \times \text{防御系数}`}
           />
 
           <p className="text-yellow-300">击破伤害不受常规增伤影响</p>
-          <BlockMath math={`\\text{击破基础值} = 3767.55 \\times (\\frac{\\text{韧性上限}}{40}+0.5)`} />
+          <BlockMath math={String.raw`\text{击破基础值} = 3767.55 \times (\frac{\text{韧性上限}}{40}+0.5)`} />
           <p>火、物理属性击破倍率为2.0，风属性击破倍率为1.5，冰、雷为1.0，量子、虚数为0.5</p>
         </FormulaBlock>
 
@@ -93,32 +97,32 @@ export default function Formula() {
           <p>特定情况下触发：</p>
 
           <BlockMath
-            math={`\\text{超击破伤害} = \\text{超击破基础值} \\times \\text{超击破倍率}`}
+            math={String.raw`\text{超击破伤害} = \text{超击破基础值} \times \text{超击破倍率}`}
           />
-          <BlockMath math={`\\times \\text{特殊独立乘区}\\times (1+\\text{易伤\\%})`} />
-          <BlockMath math={`\\times (1+\\text{击破特攻})\\times (1+\\text{击破增伤\\%})`} />
-          <BlockMath math={`\\times (1-\\text{减伤1\\%}) \\times ...`} />
+          <BlockMath math={String.raw`\times \text{特殊独立乘区}\times (1+\text{易伤\%})`} />
+          <BlockMath math={String.raw`\times (1+\text{击破特攻})\times (1+\text{击破增伤\%})`} />
+          <BlockMath math={String.raw`\times (1-\text{减伤1\%}) \times ...`} />
           <BlockMath
-            math={`\\times \\text{抗性系数} \\times \\text{防御系数}`}
+            math={String.raw`\times \text{抗性系数} \times \text{防御系数}`}
           />
           <p className="text-yellow-300">不受常规增伤影响</p>
-          <BlockMath math={`\\text{超击破基础值} = 3767.55 \\times \\frac{\\text{实际削韧值}}{10}`} />
+          <BlockMath math={String.raw`\text{超击破基础值} = 3767.55 \times \frac{\text{实际削韧值}}{10}`} />
 
         </FormulaBlock>
 
         <FormulaBlock title="持续伤害">
           <p>角色造成的持续伤害：</p>
           <BlockMath
-            math={`\\text{持续伤害} = \\text{基础值} \\times \\text{特殊独立乘区}`}
+            math={String.raw`\text{持续伤害} = \text{基础值} \times \text{特殊独立乘区}`}
           />
           <BlockMath
-            math={`\\times (1 + \\text{增伤\\%}) \\times (1 + \\text{易伤\\%}) \\times (1 - \\text{虚弱\\%})`}
+            math={String.raw`\times (1 + \text{增伤\%}) \times (1 + \text{易伤\%}) \times (1 - \text{虚弱\%})`}
           />
           <BlockMath
-            math={`\\times (1 - \\text{减伤1\\%}) \\times (1 - \\text{减伤2\\%}) \\times (1 - \\text{减伤3\\%}) \\times \\cdots`}
+            math={String.raw`\times (1 - \text{减伤1\%}) \times (1 - \text{减伤2\%}) \times (1 - \text{减伤3\%}) \times \cdots`}
           />
           <BlockMath
-            math={`\\times \\text{抗性系数} \\times \\text{防御系数} \\times \\text{持续伤害暴击区}`}
+            math={String.raw`\times \text{抗性系数} \times \text{防御系数} \times \text{持续伤害暴击区}`}
           />
           <p>
             <strong>基础值</strong>: 攻击力 ×
@@ -132,15 +136,15 @@ export default function Formula() {
         <FormulaBlock title="欢愉伤害">
             <p>角色造成的欢愉伤害：</p>
             <BlockMath
-              math={`\\text{欢愉伤害} = \\text{基础值7535.107} \\times (\\text{1+欢愉度\\%})`}
+              math={String.raw`\text{欢愉伤害} = \text{基础值7535.107} \times (\text{1+欢愉度\%})`}
             />
             <BlockMath
-              math={`\\times (1+\\text{增笑\\%}) \\times (1+\\text{易伤\\%}) `}
+              math={String.raw`\times (1+\text{增笑\%}) \times (1+\text{易伤\%}) `}
             />
             <BlockMath
-              math={`\\times(1+\\frac{5\\times\\text{笑点}}{\\text{笑点}+200})`} />
-            <BlockMath math={` \\times \\text{暴击区} \\times \\text{减伤区}`} />
-            <BlockMath math={`\\times \\text{抗性系数} \\times \\text{防御系数}`} />
+              math={String.raw`\times(1+\frac{5\times\text{笑点}}{\text{笑点}+240})`} />
+            <BlockMath math={String.raw` \times \text{暴击区} \times \text{减伤区}`} />
+            <BlockMath math={String.raw`\times \text{抗性系数} \times \text{防御系数}`} />
         </FormulaBlock>
       </div>
     </div>
