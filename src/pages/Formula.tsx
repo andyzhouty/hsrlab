@@ -142,6 +142,7 @@ export default function Formula() {
               math={String.raw`\times(1+\frac{5\times\text{笑点}}{\text{笑点}+240})`} />
             <BlockMath math={String.raw` \times \text{暴击区} \times \text{减伤区}`} />
             <BlockMath math={String.raw`\times \text{抗性系数} \times \text{防御系数}`} />
+            <p className="text-yellow-300">不受常规增伤影响</p>
         </FormulaBlock>
       </div>
     </div>
