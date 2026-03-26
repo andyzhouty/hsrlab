@@ -3,11 +3,11 @@ import Navbar from "./components/Navbar.tsx";
 import Sidebar from "./components/Sidebar.tsx";
 import Home from "./pages/Home.tsx";
 import Formula from "./pages/Formula.tsx";
-import Countdown from "./pages/Countdown.tsx";
+import FutureDate from "./pages/FutureDate.tsx";
 import Links from "./pages/Links.tsx";
 import 'katex/dist/katex.min.css';
 
-type Page = "home" | "formula" | "countdown" | "links";
+type Page = "home" | "formula" | "futuredate" | "links";
 
 function App() {
   const [page, setPage] = useState<Page>("home");
@@ -26,7 +26,7 @@ function App() {
       <main className="p-4">
         {page === "home" && <Home />}
         {page === "formula" && <Formula />}
-        {page === "countdown" && <Countdown />}
+        {page === "futuredate" && <FutureDate />}
         {page === "links" && <Links />}
       </main>
     </div>

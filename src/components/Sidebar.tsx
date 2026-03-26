@@ -23,6 +23,12 @@ export default function Sidebar({ open, setPage, close }: any) {
           <h2 className="text-lg font-bold mb-4">目录</h2>
           <button type="button"
             className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => { setPage("home"); close() }}
+          >
+            首页
+          </button>
+          <button type="button"
+            className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={() => { setPage("formula"); close() }}
           >
             公式
@@ -30,9 +36,9 @@ export default function Sidebar({ open, setPage, close }: any) {
 
           <button type="button"
             className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { setPage("countdown"); close() }}
+            onClick={() => { setPage("futuredate"); close() }}
           >
-            倒计时
+            未来日期
           </button>
 
           <button type="button"

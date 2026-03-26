@@ -11,7 +11,7 @@ type FormulaBlockProps = {
  */
 function FormulaBlock({ title, children }: FormulaBlockProps) {
   return (
-    <div className="bg-[#2b3a42] text-white rounded-xl p-6 shadow-md" style={{ overflowX: 'auto', maxWidth: '100%', fontSize: 'min(0.85rem, 3vw)' }}>
+    <div className="bg-gray-800 text-white rounded-xl p-6 shadow-md" style={{ overflowX: 'auto', maxWidth: '100%', fontSize: 'min(0.85rem, 3vw)' }}>
       <h2 className="text-lg font-bold mb-4 text-center">{title}</h2>
       <div className="space-y-3 leading-relaxed">{children}</div>
     </div>
