@@ -1,4 +1,4 @@
-export default function Navbar({ toggleMenu }: any) {
+export default function Navbar({ toggleMenu }: { toggleMenu: () => void }) {
   return (
     <div
       className="flex items-center px-4 h-14 
