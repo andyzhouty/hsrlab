@@ -135,6 +135,7 @@ export default function Formula() {
             <BlockMath
               math={String.raw`\text{欢愉伤害} = \text{基础值7535.107} \times (\text{1+欢愉度\%})`}
             />
+            <BlockMath math={String.raw`\times \text{欢愉倍率}`} />
             <BlockMath
               math={String.raw`\times (1+\text{增笑\%}) \times (1+\text{易伤\%}) `}
             />
