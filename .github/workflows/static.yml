@@ -46,7 +46,7 @@ jobs:
       - name: Build static content
         run: pnpm run build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v13
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
