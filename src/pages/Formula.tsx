@@ -28,7 +28,7 @@ export default function Formula() {
           <p>通用抗性公式：（抗性不能超过该范围）</p>
 
           <BlockMath
-            math={`\text{抗性系数} = 1 - \text{抗性} \\quad (-100\\% \\leq \\text{抗性} \\leq 90\\%)`}
+            math={`\\text{抗性系数} = 1 - \\text{抗性} \\quad (-100\\% \\leq \\text{抗性} \\leq 90\\%)`}
           />
 
           <p>角色攻击敌人时：</p>
