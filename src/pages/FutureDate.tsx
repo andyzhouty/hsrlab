@@ -107,7 +107,7 @@ const FutureDate: React.FC = () => {
       // 1. 版本开门
       events.push({
         date: openDate,
-        description: `${version}版本开门`,
+        description: `${version} 版本开门`,
         sortKey: openDate,
       });
 
@@ -116,7 +116,7 @@ const FutureDate: React.FC = () => {
       previewDate.setDate(openDate.getDate() - 12);
       events.push({
         date: previewDate,
-        description: `${version}前瞻特别节目`,
+        description: `${version} 前瞻特别节目`,
         sortKey: previewDate,
       });
 
@@ -125,7 +125,7 @@ const FutureDate: React.FC = () => {
       testDate.setDate(openDate.getDate() - 1);
       events.push({
         date: testDate,
-        description: `${nextVersion}测试服开启`,
+        description: `${nextVersion} 测试服开启`,
         sortKey: testDate,
       });
 
@@ -133,7 +133,7 @@ const FutureDate: React.FC = () => {
       const { tuesday, wednesday } = getTuesdayAndWednesday(previewDate);
       events.push({
         date: { start: tuesday, end: wednesday },
-        description: `${nextVersion}角色立绘`,
+        description: `${nextVersion} 角色立绘`,
         sortKey: tuesday,
       });
     }
