@@ -140,9 +140,7 @@ const FutureDate: React.FC = () => {
 
     // 按日期排序
     events.sort((a, b) => {
-      const aKey = a.sortKey instanceof Date ? a.sortKey.getTime() : a.sortKey.getTime();
-      const bKey = b.sortKey instanceof Date ? b.sortKey.getTime() : b.sortKey.getTime();
-      return aKey - bKey;
+      return a.sortKey.getTime() - b.sortKey.getTime();
     });
 
     return events;
