@@ -12,6 +12,14 @@ interface EventItem {
 }
 
 const FutureDate: React.FC = () => {
+  // 获取东八区当前日期（只取日期，忽略时间）
+  const getCurrentShanghaiDate = (): Date => {
+    const now = new Date();
+    const shanghaiTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+    // 返回日期部分（年月日，时分秒归零）
+    return new Date(shanghaiTime.getFullYear(), shanghaiTime.getMonth(), shanghaiTime.getDate());
+  };
+
   // 生成从 4.2 到 4.7 的版本开门日期
   const generateVersionDates = (): VersionInfo[] => {
     const startDate = new Date(2026, 3, 22); // 2026-04-22
@@ -52,7 +60,7 @@ const FutureDate: React.FC = () => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    return `${year}.${month}.${day}`;
+    return `${year}/${month}/${day}`;
   };
 
   // 格式化事件日期
@@ -67,7 +75,23 @@ const FutureDate: React.FC = () => {
       const startDay = date.start.getDate();
       const endMonth = date.end.getMonth() + 1;
       const endDay = date.end.getDate();
-      return `${startYear}.${startMonth}.${startDay} & ${endMonth}.${endDay}`;
+      return `${startYear}/${startMonth}/${startDay} & ${endMonth}/${endDay}`;
+    }
+  };
+
+  // 判断事件是否已过（完全过去）
+  // 单日事件：如果当前日期 > 事件日期，则已过
+  // 双日事件：如果当前日期 > 结束日期，则已过
+  const isEventPast = (event: EventItem, currentDate: Date): boolean => {
+    const eventDate = event.date;
+    if (eventDate instanceof Date) {
+      // 只比较日期部分
+      const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+      return currentDate > eventDateOnly;
+    } else {
+      // 双日事件，比较结束日期（第二天）
+      const endDateOnly = new Date(eventDate.end.getFullYear(), eventDate.end.getMonth(), eventDate.end.getDate());
+      return currentDate > endDateOnly;
     }
   };
 
@@ -107,15 +131,14 @@ const FutureDate: React.FC = () => {
 
       // 4. 角色立绘（前瞻所在周的周二和周三，对应下一个版本）
       const { tuesday, wednesday } = getTuesdayAndWednesday(previewDate);
-      // 确保周二和周三在同一个周内，直接作为双日事件
       events.push({
         date: { start: tuesday, end: wednesday },
         description: `${nextVersion}角色立绘`,
-        sortKey: tuesday, // 按周二排序
+        sortKey: tuesday,
       });
     }
 
-    // 按日期排序（双日事件按 start 排序）
+    // 按日期排序
     events.sort((a, b) => {
       const aKey = a.sortKey instanceof Date ? a.sortKey.getTime() : a.sortKey.getTime();
       const bKey = b.sortKey instanceof Date ? b.sortKey.getTime() : b.sortKey.getTime();
@@ -125,7 +148,11 @@ const FutureDate: React.FC = () => {
     return events;
   };
 
-  const allEvents = generateAllEvents();
+  const allEventsRaw = generateAllEvents();
+  const currentDate = getCurrentShanghaiDate();
+
+  // 过滤掉已经过去的事件
+  const activeEvents = allEventsRaw.filter(event => !isEventPast(event, currentDate));
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-800 rounded-lg shadow p-6">
@@ -142,17 +169,23 @@ const FutureDate: React.FC = () => {
             版本日期
           </h3>
           <div className="flex-grow text-gray-300 overflow-y-auto text-lg" id="version-info">
-            <ul className="space-y-3">
-              {allEvents.map((event, idx) => (
-                <li key={idx} className="flex items-baseline">
-                  {/* 固定宽度，确保描述文字左对齐 */}
-                  <span className="font-mono text-amber-400 w-48 flex-shrink-0">
-                    {formatEventDate(event.date)}
-                  </span>
-                  <span className="text-gray-200">{event.description}</span>
-                </li>
-              ))}
-            </ul>
+            {activeEvents.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-gray-400 italic">
+                暂无未来事件
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {activeEvents.map((event, idx) => (
+                  <li key={idx} className="flex items-baseline">
+                    {/* 固定宽度，确保描述文字左对齐 */}
+                    <span className="font-mono text-amber-300 w-48 flex-shrink-0 font-medium">
+                      {formatEventDate(event.date)}
+                    </span>
+                    <span className="text-gray-200">{event.description}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 
