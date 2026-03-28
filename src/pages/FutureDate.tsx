@@ -77,17 +77,17 @@ const FutureDate: React.FC = () => {
           <h3 className="text-xl font-semibold text-gray-100 border-b border-gray-600 pb-2 mb-4">
             版本日期
           </h3>
-          <div className="flex-grow text-gray-300 overflow-y-auto" id="version-info">
+          <div className="flex-grow text-gray-300 overflow-y-auto text-lg" id="version-info">
             {activeEvents.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-400 italic">
                 暂无未来事件
               </div>
             ) : (
               <ul className="space-y-3">
-                {activeEvents.map((event, idx) => (
-                  <li key={idx} className="flex items-baseline">
-                    <span className="font-mono text-amber-300 w-36 flex-shrink-0">
-                      {formatEventDate(event.date)}：{' '}
+                {activeEvents.map((event) => (
+                  <li key={`${formatEventDate(event.date)}-${event.description}`} className="flex items-baseline">
+                    <span className="font-mono text-amber-300 w-48 flex-shrink-0">
+                      {formatEventDate(event.date)}
                     </span>
                     <span className="text-gray-200">{event.description}</span>
                   </li>
@@ -102,28 +102,29 @@ const FutureDate: React.FC = () => {
           <h3 className="text-xl font-semibold text-gray-100 border-b border-gray-600 pb-2 mb-4">
             深渊日期
           </h3>
-          <div className="flex-grow text-gray-300 overflow-y-auto" id="challenges-info">
+          <div className="flex-grow text-gray-300 overflow-y-auto text-lg" id="challenges-info">
             {displayEndgames.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-400 italic">
                 暂无深渊信息
               </div>
             ) : (
               <ul className="space-y-3">
-                {displayEndgames.map((endgame, idx) => {
+                {displayEndgames.map((endgame) => {
                   const link = getEndgameLink(endgame.version, endgame.name);
                   const testOpen = isTestServerOpen(endgame.version);
                   const showLink = link && testOpen;
 
                   return (
-                    <li key={idx} className="flex items-baseline">
-                      <span className="font-mono text-amber-300 w-36 flex-shrink-0">
-                        {formatSingleDate(endgame.date)}：{' '}
+                    <li key={`${endgame.version}-${endgame.name}-${formatSingleDate(endgame.date)}`} className="flex items-baseline">
+                      <span className="font-mono text-amber-300 w-48 flex-shrink-0">
+                        {formatSingleDate(endgame.date)}
                       </span>
                       <span className="text-gray-200">
                         {endgame.version} {endgame.name}
                         {showLink && (
                           <>
                             {' '}
+                            <span className="text-amber-300">
                             <a
                               href={link}
                               target="_blank"
@@ -132,6 +133,7 @@ const FutureDate: React.FC = () => {
                             >
                               可跳转
                             </a>
+                            </span>
                           </>
                         )}
                       </span>
