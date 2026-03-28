@@ -2,7 +2,7 @@ export default function Navbar({ toggleMenu }: { toggleMenu: () => void }) {
   return (
     <div
       className="flex items-center px-4 h-14 
-      bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50"
+      bg-gray-800 shadow-sm sticky top-0 z-50"
     >
       {/* 左侧 */}
       <button
