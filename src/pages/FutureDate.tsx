@@ -26,8 +26,42 @@ const FutureDate: React.FC = () => {
   // 获取所有深渊事件并关联版本
   const allEndgamesRaw = generateEndgameDates();
   const allEndgames = attachVersionToEndgames(allEndgamesRaw, allVersions);
-  // 筛选出要展示的深渊（4.0 ~ 4.8）
   const displayEndgames = getEndgamesForVersions(versionsToShow, allEndgames);
+
+  // 辅助：从版本号获取 x（整数部分）
+  const getVersionNumber = (version: string): number => {
+    const parts = version.split('.');
+    return parseInt(parts[1], 10);
+  };
+
+  // 辅助：根据版本号和深渊类型生成链接
+  const getEndgameLink = (version: string, name: string): string | null => {
+    const x = getVersionNumber(version);
+    if (x < 0 || x > 8) return null; // 安全边界
+    switch (name) {
+      case '混沌回忆':
+        return `https://hsr.nanoka.cc/maze/${x + 1030}/`;
+      case '虚构叙事':
+        return `https://hsr.nanoka.cc/story/${x + 2021}/`;
+      case '末日幻影':
+        return `https://hsr.nanoka.cc/boss/${x + 3015}/`;
+      default:
+        return null;
+    }
+  };
+
+  // 辅助：判断某个版本的测试服是否已开启
+  const isTestServerOpen = (version: string): boolean => {
+    const versionInfo = allVersions.find(v => v.version === version);
+    if (!versionInfo) return false;
+    const openDate = versionInfo.date;
+    const testServerDate = new Date(openDate);
+    testServerDate.setDate(openDate.getDate() - 43); // 测试服开启时间
+    // 只比较日期部分
+    const testDateOnly = new Date(testServerDate.getFullYear(), testServerDate.getMonth(), testServerDate.getDate());
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    return currentDateOnly >= testDateOnly;
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-800 rounded-lg shadow p-6">
@@ -50,10 +84,10 @@ const FutureDate: React.FC = () => {
               </div>
             ) : (
               <ul className="space-y-3">
-                {activeEvents.map((event) => (
-                  <li key={`${event.date}-${event.description}`} className="flex items-baseline text-lg">
-                    <span className="font-mono text-amber-300 w-48 flex-shrink-0">
-                      {formatEventDate(event.date)}
+                {activeEvents.map((event, idx) => (
+                  <li key={idx} className="flex items-baseline">
+                    <span className="font-mono text-amber-300 w-36 flex-shrink-0">
+                      {formatEventDate(event.date)}：{' '}
                     </span>
                     <span className="text-gray-200">{event.description}</span>
                   </li>
@@ -75,16 +109,35 @@ const FutureDate: React.FC = () => {
               </div>
             ) : (
               <ul className="space-y-3">
-                {displayEndgames.map((endgame) => (
-                  <li key={`${endgame.date}-${endgame.version}-${endgame.name}`} className="flex items-baseline text-lg">
-                    <span className="font-mono text-amber-300 w-48 flex-shrink-0">
-                      {formatSingleDate(endgame.date)}
-                    </span>
-                    <span className="text-gray-200">
-                      {endgame.version} {endgame.name}
-                    </span>
-                  </li>
-                ))}
+                {displayEndgames.map((endgame, idx) => {
+                  const link = getEndgameLink(endgame.version, endgame.name);
+                  const testOpen = isTestServerOpen(endgame.version);
+                  const showLink = link && testOpen;
+
+                  return (
+                    <li key={idx} className="flex items-baseline">
+                      <span className="font-mono text-amber-300 w-36 flex-shrink-0">
+                        {formatSingleDate(endgame.date)}：{' '}
+                      </span>
+                      <span className="text-gray-200">
+                        {endgame.version} {endgame.name}
+                        {showLink && (
+                          <>
+                            {' '}
+                            <a
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-inherit no-underline"
+                            >
+                              可跳转
+                            </a>
+                          </>
+                        )}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
