@@ -146,7 +146,7 @@ export const generateAllEvents = (versions: VersionInfo[]): EventItem[] => {
     // 1. 版本开门
     events.push({
       date: openDate,
-      description: `${version}版本开门`,
+      description: `${version} 版本开门`,
       sortKey: openDate,
     });
 
