@@ -1,5 +1,3 @@
-import React from 'react';
-
 function Links() {
   const links = [
     { name: 'Nanoka HSR', url: 'https://hsr.nanoka.cc', domain: 'hsr.nanoka.cc' },
