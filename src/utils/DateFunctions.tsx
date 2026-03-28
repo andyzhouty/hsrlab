@@ -121,7 +121,7 @@ export const formatEventDate = (date: Date | { start: Date; end: Date }): string
  * 单日事件：当前日期 > 事件日期
  * 双日事件：当前日期 > 结束日期
  */
-export const isEventPast = (event: EventItem, currentDate: Date): boolean => {
+export const isEventPast = (event: EventItem | EndgameEvent, currentDate: Date): boolean => {
   const eventDate = event.date;
   if (eventDate instanceof Date) {
     const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
