@@ -195,13 +195,21 @@ export const generateAllEvents = (versions: VersionInfo[]): EventItem[] => {
 
 // ========== 深渊相关类型和函数 ==========
 
-export type EndgameType = '虚构叙事' | '混沌回忆' | '末日幻影';
+export type EndgameType = '虚构叙事' | '混沌回忆' | '末日幻影' | '异相仲裁';
 
 export interface EndgameEvent {
   date: Date;
   name: EndgameType;
   version: string; // 所属版本
 }
+
+export const generateAnomalyArbitration = (versions: VersionInfo[]): EndgameEvent[] => {
+  return versions.map(version => ({
+    date: version.date,
+    name: '异相仲裁',
+    version: version.version,
+  }));
+};
 
 /**
  * 获取深渊开始日期列表（从4.1虚构叙事开始推算）

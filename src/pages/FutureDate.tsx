@@ -7,7 +7,7 @@ import {
   generateAllEvents,
   generateEndgameDates,
   attachVersionToEndgames,
-  getEndgamesForVersions,
+  generateAnomalyArbitration,
   formatSingleDate,
 } from '../utils/DateFunctions';
 
@@ -20,13 +20,17 @@ const FutureDate: React.FC = () => {
   const allEvents = generateAllEvents(allVersions);
   const activeEvents = allEvents.filter(event => !isEventPast(event, currentDate));
 
-  // 3. 右侧深渊：展示 4.0 ~ 4.8 所有版本的深渊
-  const versionsToShow = allVersions; // 已经是 4.0 ~ 4.8
+  // 深渊数据
+  const cycleEndgamesRaw = generateEndgameDates();
+  const cycleEndgames = attachVersionToEndgames(cycleEndgamesRaw, allVersions);
+  const anomalyEndgames = generateAnomalyArbitration(allVersions).filter(endgame => !isEventPast(endgame, currentDate));
+  const allEndgames = [...cycleEndgames, ...anomalyEndgames];
 
-  // 获取所有深渊事件并关联版本
-  const allEndgamesRaw = generateEndgameDates();
-  const allEndgames = attachVersionToEndgames(allEndgamesRaw, allVersions);
-  const displayEndgames = getEndgamesForVersions(versionsToShow, allEndgames);
+  // 显示版本范围：4.0 ~ 4.8
+  const versionsToShow = allVersions;
+  const displayEndgames = allEndgames
+    .filter(event => versionsToShow.some(v => v.version === event.version))
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
 
   // 辅助：从版本号获取 x（整数部分）
   const getVersionNumber = (version: string): number => {
@@ -45,6 +49,8 @@ const FutureDate: React.FC = () => {
         return `https://hsr.nanoka.cc/story/${x + 2021}/`;
       case '末日幻影':
         return `https://hsr.nanoka.cc/boss/${x + 3015}/`;
+      case '异相仲裁':
+        return `https://hsr.nanoka.cc/peak/${x + 4}/`;
       default:
         return null;
     }
