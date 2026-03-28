@@ -77,7 +77,7 @@ const FutureDate: React.FC = () => {
           <h3 className="text-xl font-semibold text-gray-100 border-b border-gray-600 pb-2 mb-4">
             版本日期
           </h3>
-          <div className="flex-grow text-gray-300 overflow-y-auto text-lg" id="version-info">
+          <div className="flex-grow text-gray-300 overflow-y-auto" id="version-info">
             {activeEvents.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-400 italic">
                 暂无未来事件
@@ -85,8 +85,8 @@ const FutureDate: React.FC = () => {
             ) : (
               <ul className="space-y-3">
                 {activeEvents.map((event) => (
-                  <li key={`${formatEventDate(event.date)}-${event.description}`} className="flex items-baseline">
-                    <span className="font-mono text-amber-300 w-48 flex-shrink-0">
+                  <li key={`${formatEventDate(event.date)}-${event.description}`} className="flex items-baseline md:text-lg">
+                    <span className="font-mono text-amber-300 w-40 flex-shrink-0">
                       {formatEventDate(event.date)}
                     </span>
                     <span className="text-gray-200">{event.description}</span>
@@ -102,7 +102,7 @@ const FutureDate: React.FC = () => {
           <h3 className="text-xl font-semibold text-gray-100 border-b border-gray-600 pb-2 mb-4">
             深渊日期
           </h3>
-          <div className="flex-grow text-gray-300 overflow-y-auto text-lg" id="challenges-info">
+          <div className="flex-grow text-gray-300 overflow-y-auto md:text-lg" id="challenges-info">
             {displayEndgames.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-400 italic">
                 暂无深渊信息
@@ -116,7 +116,7 @@ const FutureDate: React.FC = () => {
 
                   return (
                     <li key={`${endgame.version}-${endgame.name}-${formatSingleDate(endgame.date)}`} className="flex items-baseline">
-                      <span className="font-mono text-amber-300 w-48 flex-shrink-0">
+                      <span className="font-mono text-amber-300 w-36 flex-shrink-0">
                         {formatSingleDate(endgame.date)}
                       </span>
                       <span className="text-gray-200">
@@ -124,7 +124,7 @@ const FutureDate: React.FC = () => {
                         {showLink && (
                           <>
                             {' '}
-                            <span className="text-amber-300">
+                            <span className="text-cyan-400">
                             <a
                               href={link}
                               target="_blank"

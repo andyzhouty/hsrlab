@@ -87,7 +87,7 @@ export const getTuesdayAndWednesday = (date: Date): { tuesday: Date; wednesday: 
  * 格式化单个日期为 "YYYY/M/D"
  */
 export const formatSingleDate = (date: Date): string => {
-  const year = date.getFullYear();
+  const year = date.getFullYear() % 100;
   const month = date.getMonth() + 1;
   const day = date.getDate();
   return `${year}/${month}/${day}`;
@@ -97,7 +97,7 @@ export const formatSingleDate = (date: Date): string => {
  * 格式化双日事件日期为 "YYYY/M/D & M/D"
  */
 export const formatDoubleDate = (start: Date, end: Date): string => {
-  const startYear = start.getFullYear();
+  const startYear = start.getFullYear() % 100;
   const startMonth = start.getMonth() + 1;
   const startDay = start.getDate();
   const endMonth = end.getMonth() + 1;
