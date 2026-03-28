@@ -86,7 +86,7 @@ const FutureDate: React.FC = () => {
               <ul className="space-y-3">
                 {activeEvents.map((event) => (
                   <li key={`${formatEventDate(event.date)}-${event.description}`} className="flex items-baseline md:text-lg">
-                    <span className="font-mono text-amber-300 w-40 flex-shrink-0">
+                    <span className="font-mono text-amber-300 w-36 max-sm:w-32 md:w-40 flex-shrink-0">
                       {formatEventDate(event.date)}
                     </span>
                     <span className="text-gray-200">{event.description}</span>
@@ -115,8 +115,8 @@ const FutureDate: React.FC = () => {
                   const showLink = link && testOpen;
 
                   return (
-                    <li key={`${endgame.version}-${endgame.name}-${formatSingleDate(endgame.date)}`} className="flex items-baseline">
-                      <span className="font-mono text-amber-300 w-36 flex-shrink-0">
+                    <li key={`${endgame.version}-${endgame.name}-${formatSingleDate(endgame.date)}`} className="flex items-baseline md:text-lg">
+                      <span className="font-mono text-amber-300 max-sm:w-32 w-36 flex-shrink-0">
                         {formatSingleDate(endgame.date)}
                       </span>
                       <span className="text-gray-200">
