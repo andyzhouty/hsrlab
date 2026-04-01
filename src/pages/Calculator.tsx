@@ -85,7 +85,7 @@ export default function Calculator() {
     const v4 = parseFloat(speeds.v4) || 0;
     return 80 + v1 / 5 + v2 / 10 + v3 / 20 + v4 / 50;
   };
-
+    const [isVonwacqEnabled, setIsVonwacqEnabled] = useState(false);
   // ========== 最低速度 - 计算逻辑 ==========
   const calculateMinSpeed = () => {
     const av = parseInt(params.av) || 0;
@@ -94,11 +94,17 @@ export default function Calculator() {
     const dddTimes = parseInt(params.dddTimes) || 0;
     const windSetTimes = parseInt(params.windSetTimes) || 0;
 
-    // 避免除以 0
     if (av === 0) return 0;
 
-    // 核心公式
-    return (t * 10000 - (1400 + 200 * s) * dddTimes - 2500 * windSetTimes) / av;
+    // 基础公式
+    let base = t * 10000 - (1600 + 200 * s) * dddTimes - 2500 * windSetTimes;
+    
+    // Vonwacq开启：多减 4000
+    if (isVonwacqEnabled) {
+      base -= 4000;
+    }
+
+    return Math.max(base / av, 0);
   };
 
   // ========== 阿哈速度 - 输入处理（支持浮点数）==========
@@ -154,7 +160,17 @@ export default function Calculator() {
           <div className="mb-4 p-2 bg-yellow-900/30 rounded-lg border border-yellow-800">
             <p className="text-yellow-200 text-sm">⚠️ 不支持一个队伍内有不同的舞舞舞叠影数</p>
           </div>
-
+{/* Vonwacq 开关 UI */}
+          <div className="flex items-center gap-3 mb-5">
+            <input
+              type="checkbox"
+              id="vonwacq"
+              checked={isVonwacqEnabled}
+              onChange={() => setIsVonwacqEnabled(!isVonwacqEnabled)}
+              className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 cursor-pointer"
+            />
+            <label htmlFor="vonwacq" className="text-white cursor-pointer">翁瓦克</label>
+          </div>
           {/* 整数输入区域 */}
           <div className="flex flex-wrap gap-3 mb-6">
             <IntegerInput label="行动值 AV" name="av" value={params.av} onChange={handleParamChange} />
@@ -169,7 +185,7 @@ export default function Calculator() {
             <p className="text-gray-300 text-sm">所需最低速度 V</p>
             <p className="text-2xl font-bold text-white mt-1">{minSpeedResult.toFixed(2)}</p>
             <p className="text-xs text-gray-400 mt-1">
-              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套) / AV
+              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套 (若有翁瓦克则-4000) ) / AV
             </p>
           </div>
         </div>
