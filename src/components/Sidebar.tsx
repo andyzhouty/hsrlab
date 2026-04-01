@@ -5,8 +5,20 @@ interface SidebarProps {
   close: () => void;
 }
 
-export default function Sidebar({ open, close }: SidebarProps) {
+function LinkButton({ to, label }: { to: string; label: string; onClick: () => void }) {
   const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+      onClick={() => { navigate(to); close(); }}
+    >
+      {label}
+    </button>
+  );
+}
+
+export default function Sidebar({ open, close }: SidebarProps) {
   return (
     <>
       {/* 遮罩 */}
@@ -29,33 +41,11 @@ export default function Sidebar({ open, close }: SidebarProps) {
         <div className="p-6 space-y-4">
 
           <h2 className="text-lg font-bold mb-4">目录</h2>
-          <button type="button"
-            className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { navigate("home"); close() }}
-          >
-            首页
-          </button>
-          <button type="button"
-            className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { navigate("formula"); close() }}
-          >
-            公式
-          </button>
-
-          <button type="button"
-            className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { navigate("futuredate"); close() }}
-          >
-            未来日期
-          </button>
-
-          <button type="button"
-            className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { navigate("links"); close() }}
-          >
-            测试服友站链接
-          </button>
-
+          <LinkButton to="/home" label="首页" onClick={close} />
+          <LinkButton to="/formula" label="公式" onClick={close} />
+          <LinkButton to="/futuredate" label="未来日期" onClick={close} />
+          <LinkButton to="/links" label="测试服链接" onClick={close} />
+          <LinkButton to="/calculator" label="计算器" onClick={close} />
         </div>
       </div>
     </>
