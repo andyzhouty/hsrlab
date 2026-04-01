@@ -185,7 +185,7 @@ export default function Calculator() {
             <p className="text-gray-300 text-sm">所需最低速度 V</p>
             <p className="text-2xl font-bold text-white mt-1">{minSpeedResult.toFixed(2)}</p>
             <p className="text-xs text-gray-400 mt-1">
-              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套 (若有翁瓦克则-4000) ) / AV
+              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套次数 + (若有翁瓦克则-4000) ) / AV
             </p>
           </div>
         </div>
