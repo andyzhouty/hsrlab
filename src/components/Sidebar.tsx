@@ -1,10 +1,18 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
-export default function Sidebar({ open, setPage, close }: any) {
+import { useNavigate } from "react-router-dom";
+
+interface SidebarProps {
+  open: boolean;
+  close: () => void;
+}
+
+export default function Sidebar({ open, close }: SidebarProps) {
+  const navigate = useNavigate();
   return (
     <>
       {/* 遮罩 */}
       {open && (
-        // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
+        // biome-ignore lint/a11y/noStaticElementInteractions: make a div that can be clicked to close the sidebar
+        // biome-ignore lint/a11y/useKeyWithClickEvents: make a div that can be clicked to close the sidebar
         <div 
           className="fixed inset-0 bg-black/30 z-40"
           onClick={close}
@@ -23,27 +31,27 @@ export default function Sidebar({ open, setPage, close }: any) {
           <h2 className="text-lg font-bold mb-4">目录</h2>
           <button type="button"
             className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { setPage("home"); close() }}
+            onClick={() => { navigate("home"); close() }}
           >
             首页
           </button>
           <button type="button"
             className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { setPage("formula"); close() }}
+            onClick={() => { navigate("formula"); close() }}
           >
             公式
           </button>
 
           <button type="button"
             className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { setPage("futuredate"); close() }}
+            onClick={() => { navigate("futuredate"); close() }}
           >
             未来日期
           </button>
 
           <button type="button"
             className="block w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => { setPage("links"); close() }}
+            onClick={() => { navigate("links"); close() }}
           >
             测试服友站链接
           </button>

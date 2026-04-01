@@ -6,9 +6,10 @@ import { ThemeProvider } from './context/ThemeContext'
 import './index.css'
 import 'katex/dist/katex.min.css'
 
+// biome-ignore lint/style/noNonNullAssertion: root element is guaranteed to exist in the HTML file
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename='/hsrlab'>
       <ThemeProvider>
         <App />
       </ThemeProvider>
