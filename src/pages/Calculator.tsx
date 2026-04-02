@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 // 可复用数字输入框组件（支持浮点数 - 速度专用）
 function SpeedInput({
@@ -6,7 +6,7 @@ function SpeedInput({
   name,
   value,
   onChange,
-  placeholder = "请输入"
+  placeholder = "请输入",
 }: {
   label: string;
   name: string;
@@ -38,7 +38,7 @@ function IntegerInput({
   name,
   value,
   onChange,
-  placeholder = "请输入"
+  placeholder = "请输入",
 }: {
   label: string;
   name: string;
@@ -66,15 +66,15 @@ function IntegerInput({
 
 export default function Calculator() {
   // ========== 阿哈速度计算器 状态 ==========
-  const [speeds, setSpeeds] = useState({ v1: '', v2: '', v3: '', v4: '' });
+  const [speeds, setSpeeds] = useState({ v1: "", v2: "", v3: "", v4: "" });
 
   // ========== 行动值最低速度计算器 状态 ==========
   const [params, setParams] = useState({
-    av: '',       // 行动值 (整数)
-    t: '',        // 动数 (整数)
-    s: '',        // 舞舞舞叠影数 (整数)
-    dddTimes: '', // 舞舞舞次数 (整数)
-    windSetTimes: '' // 风套触发次数 (整数)
+    av: "", // 行动值 (整数)
+    t: "", // 动数 (整数)
+    s: "", // 舞舞舞叠影数 (整数)
+    dddTimes: "", // 舞舞舞次数 (整数)
+    windSetTimes: "", // 风套触发次数 (整数)
   });
 
   // ========== 阿哈速度 - 计算逻辑 ==========
@@ -86,22 +86,29 @@ export default function Calculator() {
     // sort v1, v2, v3, v4 in descending order to ensure v1 is the largest speed
     const sortedSpeeds = [v1, v2, v3, v4].sort((a, b) => b - a);
     const multipliers = [0.2, 0.1, 0.05, 0.02];
-    return 80 + sortedSpeeds.reduce((sum, speed, index) => sum + speed * multipliers[index], 0);
+    return (
+      80 +
+      sortedSpeeds.reduce(
+        (sum, speed, index) => sum + speed * multipliers[index],
+        0,
+      )
+    );
   };
   const [isVonwacqEnabled, setIsVonwacqEnabled] = useState(false);
   // ========== 最低速度 - 计算逻辑 ==========
   const calculateMinSpeed = () => {
-    const av = parseInt(params.av) || 0;
-    const t = parseInt(params.t) || 0;
-    const s = parseInt(params.s) || 0;
-    const dddTimes = parseInt(params.dddTimes) || 0;
-    const windSetTimes = parseInt(params.windSetTimes) || 0;
+    const atoi = (str: string) => parseInt(str, 10) || 0;
+    const av = atoi(params.av);
+    const t = atoi(params.t);
+    const s = atoi(params.s);
+    const dddTimes = atoi(params.dddTimes);
+    const windSetTimes = atoi(params.windSetTimes);
 
     if (av === 0) return 0;
 
     // 基础公式
     let base = t * 10000 - (1600 + 200 * s) * dddTimes - 2500 * windSetTimes;
-    
+
     // Vonwacq开启：多减 4000
     if (isVonwacqEnabled) {
       base -= 4000;
@@ -113,16 +120,16 @@ export default function Calculator() {
   // ========== 阿哈速度 - 输入处理（支持浮点数）==========
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
-      setSpeeds(prev => ({ ...prev, [name]: value }));
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setSpeeds((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   // ========== 最低速度 - 输入处理（仅整数）==========
   const handleParamChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (value === '' || /^\d+$/.test(value)) {
-      setParams(prev => ({ ...prev, [name]: value }));
+    if (value === "" || /^\d+$/.test(value)) {
+      setParams((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -143,27 +150,56 @@ export default function Calculator() {
         <div className="bg-gray-800 rounded-2xl shadow p-6 flex-1">
           <h3 className="text-xl font-bold text-white mb-4">阿哈速度计算器</h3>
           <div className="flex flex-wrap gap-4 mb-6">
-            <SpeedInput label="速度 v1" name="v1" value={speeds.v1} onChange={handleSpeedChange} />
-            <SpeedInput label="速度 v2（可选）" name="v2" value={speeds.v2} onChange={handleSpeedChange} placeholder="可不填" />
-            <SpeedInput label="速度 v3（可选）" name="v3" value={speeds.v3} onChange={handleSpeedChange} placeholder="可不填" />
-            <SpeedInput label="速度 v4（可选）" name="v4" value={speeds.v4} onChange={handleSpeedChange} placeholder="可不填" />
+            <SpeedInput
+              label="速度 v1"
+              name="v1"
+              value={speeds.v1}
+              onChange={handleSpeedChange}
+            />
+            <SpeedInput
+              label="速度 v2（可选）"
+              name="v2"
+              value={speeds.v2}
+              onChange={handleSpeedChange}
+              placeholder="可不填"
+            />
+            <SpeedInput
+              label="速度 v3（可选）"
+              name="v3"
+              value={speeds.v3}
+              onChange={handleSpeedChange}
+              placeholder="可不填"
+            />
+            <SpeedInput
+              label="速度 v4（可选）"
+              name="v4"
+              value={speeds.v4}
+              onChange={handleSpeedChange}
+              placeholder="可不填"
+            />
           </div>
           <div className="mt-6 p-4 bg-gray-700 rounded-xl">
             <p className="text-gray-300 text-sm">阿哈时刻速度</p>
-            <p className="text-2xl font-bold text-white mt-1">{ahaResult.toFixed(2)}</p>
-            <p className="text-xs text-gray-400 mt-1">公式：80 + v1/5 + v2/10 + v3/20 + v4/50</p>
+            <p className="text-2xl font-bold text-white mt-1">
+              {ahaResult.toFixed(2)}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              公式：80 + v1/5 + v2/10 + v3/20 + v4/50
+            </p>
           </div>
         </div>
 
         {/* 右侧：行动值最低速度计算器 */}
         <div className="bg-gray-800 rounded-2xl shadow p-6 flex-1">
           <h3 className="text-xl font-bold text-white mb-4">最低速度计算器</h3>
-          
+
           {/* 备注提示 */}
           <div className="mb-4 p-2 bg-yellow-900/30 rounded-lg border border-yellow-800">
-            <p className="text-yellow-200 text-sm">⚠️ 不支持一个队伍内有不同的舞舞舞叠影数</p>
+            <p className="text-yellow-200 text-sm">
+              ⚠️ 不支持一个队伍内有不同的舞舞舞叠影数
+            </p>
           </div>
-{/* Vonwacq 开关 UI */}
+          {/* Vonwacq 开关 UI */}
           <div className="flex items-center gap-3 mb-5">
             <input
               type="checkbox"
@@ -172,23 +208,53 @@ export default function Calculator() {
               onChange={() => setIsVonwacqEnabled(!isVonwacqEnabled)}
               className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 cursor-pointer"
             />
-            <label htmlFor="vonwacq" className="text-white cursor-pointer">翁瓦克</label>
+            <label htmlFor="vonwacq" className="text-white cursor-pointer">
+              翁瓦克
+            </label>
           </div>
           {/* 整数输入区域 */}
           <div className="flex flex-wrap gap-3 mb-6">
-            <IntegerInput label="行动值 AV" name="av" value={params.av} onChange={handleParamChange} />
-            <IntegerInput label="动数 T" name="t" value={params.t} onChange={handleParamChange} />
-            <IntegerInput label="舞舞舞叠影 S" name="s" value={params.s} onChange={handleParamChange} />
-            <IntegerInput label="舞舞舞次数" name="dddTimes" value={params.dddTimes} onChange={handleParamChange} />
-            <IntegerInput label="风套触发次数" name="windSetTimes" value={params.windSetTimes} onChange={handleParamChange} />
+            <IntegerInput
+              label="行动值 AV"
+              name="av"
+              value={params.av}
+              onChange={handleParamChange}
+            />
+            <IntegerInput
+              label="动数 T"
+              name="t"
+              value={params.t}
+              onChange={handleParamChange}
+            />
+            <IntegerInput
+              label="舞舞舞叠影 S"
+              name="s"
+              value={params.s}
+              onChange={handleParamChange}
+            />
+            <IntegerInput
+              label="舞舞舞次数"
+              name="dddTimes"
+              value={params.dddTimes}
+              onChange={handleParamChange}
+            />
+            <IntegerInput
+              label="风套触发次数"
+              name="windSetTimes"
+              value={params.windSetTimes}
+              onChange={handleParamChange}
+            />
           </div>
 
           {/* 结果展示 */}
           <div className="mt-6 p-4 bg-gray-700 rounded-xl">
             <p className="text-gray-300 text-sm">所需最低速度 V</p>
-            <p className="text-2xl font-bold text-white mt-1">{minSpeedResult.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-white mt-1">
+              {minSpeedResult.toFixed(2)}
+            </p>
             <p className="text-xs text-gray-400 mt-1">
-              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套次数 + (若有翁瓦克则-4000) ) / AV
+              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套次数 +
+              (若有翁瓦克则-4000) ) / AV
             </p>
           </div>
         </div>
