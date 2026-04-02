@@ -83,9 +83,12 @@ export default function Calculator() {
     const v2 = parseFloat(speeds.v2) || 0;
     const v3 = parseFloat(speeds.v3) || 0;
     const v4 = parseFloat(speeds.v4) || 0;
-    return 80 + v1 / 5 + v2 / 10 + v3 / 20 + v4 / 50;
+    // sort v1, v2, v3, v4 in descending order to ensure v1 is the largest speed
+    const sortedSpeeds = [v1, v2, v3, v4].sort((a, b) => b - a);
+    const multipliers = [0.2, 0.1, 0.05, 0.02];
+    return 80 + sortedSpeeds.reduce((sum, speed, index) => sum + speed * multipliers[index], 0);
   };
-    const [isVonwacqEnabled, setIsVonwacqEnabled] = useState(false);
+  const [isVonwacqEnabled, setIsVonwacqEnabled] = useState(false);
   // ========== 最低速度 - 计算逻辑 ==========
   const calculateMinSpeed = () => {
     const av = parseInt(params.av) || 0;
