@@ -79,12 +79,12 @@ export default function Calculator() {
 
   // ========== 阿哈速度 - 计算逻辑 ==========
   const calculateAhaSpeed = () => {
-    const v1 = parseFloat(speeds.v1) || 0;
-    const v2 = parseFloat(speeds.v2) || 0;
-    const v3 = parseFloat(speeds.v3) || 0;
-    const v4 = parseFloat(speeds.v4) || 0;
-    // sort v1, v2, v3, v4 in descending order to ensure v1 is the largest speed
-    const sortedSpeeds = [v1, v2, v3, v4].sort((a, b) => b - a);
+    const atof = (str: string) => parseFloat(str) || 0;
+    const sortedSpeeds = (
+      [speeds.v1, speeds.v2, speeds.v3, speeds.v4]
+      .map(atof)
+      .sort((a, b) => b - a)
+    );
     const multipliers = [0.2, 0.1, 0.05, 0.02];
     return (
       80 +
@@ -98,6 +98,7 @@ export default function Calculator() {
   // ========== 最低速度 - 计算逻辑 ==========
   const calculateMinSpeed = () => {
     const atoi = (str: string) => parseInt(str, 10) || 0;
+
     const av = atoi(params.av);
     const t = atoi(params.t);
     const s = atoi(params.s);
@@ -107,14 +108,9 @@ export default function Calculator() {
     if (av === 0) return 0;
 
     // 基础公式
-    let base = t * 10000 - (1600 + 200 * s) * dddTimes - 2500 * windSetTimes;
+    const base = t * 10000 - (1600 + 200 * s) * dddTimes - 2500 * windSetTimes;
 
-    // Vonwacq开启：多减 4000
-    if (isVonwacqEnabled) {
-      base -= 4000;
-    }
-
-    return Math.max(base / av, 0);
+    return Math.max((base - (isVonwacqEnabled ? 4000 : 0)) / av, 0);
   };
 
   // ========== 阿哈速度 - 输入处理（支持浮点数）==========
