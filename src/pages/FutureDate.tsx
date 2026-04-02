@@ -25,7 +25,9 @@ const FutureDate: React.FC = () => {
 
   // 深渊数据
   const cycleEndgamesRaw = generateEndgameDates();
-  const cycleEndgames = attachVersionToEndgames(cycleEndgamesRaw, allVersions);
+  const cycleEndgames = attachVersionToEndgames(cycleEndgamesRaw, allVersions).filter(
+    (endgame) => !isEventPast(endgame, currentDate),
+  );
   const anomalyEndgames = generateAnomalyArbitration(allVersions).filter(
     (endgame) => !isEventPast(endgame, currentDate),
   );
