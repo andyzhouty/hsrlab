@@ -8,7 +8,7 @@ export default function Navbar({ toggleMenu }: { toggleMenu: () => void }) {
       <button
         type="button"
         onClick={toggleMenu}
-        className="text-xl p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="text-xl p-2 rounded-lg hover:bg-gray-700"
       >
         ☰
       </button>

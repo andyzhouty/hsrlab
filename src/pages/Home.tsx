@@ -8,7 +8,7 @@ export default function Home() {
           欢迎来到 HSRLab
         </h2>
 
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-gray-300">
           一个星铁公式、工具和测试服链接资源的集合地
         </p>
 

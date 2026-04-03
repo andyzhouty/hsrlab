@@ -16,7 +16,7 @@ function App() {
   return (
     <>
       {/* 1. 整个应用用 Router 包裹 */}
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
+      <div className="min-h-screen bg-gray-900 text-white">
         <Navbar toggleMenu={() => setMenuOpen(!menuOpen)} />
 
         <Sidebar
