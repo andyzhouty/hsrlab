@@ -1,5 +1,37 @@
 import { useState } from "react";
 
+// 浮点数输入（效果命中专用）
+function FloatInput({
+  label,
+  name,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+}) {
+  return (
+    <div className="flex-1 min-w-[110px]">
+      <label htmlFor={name} className="block text-gray-300 text-sm mb-1">
+        {label}
+      </label>
+      <input
+        id={name}
+        type="text"
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  );
+}
+
 // 可复用数字输入框组件（支持浮点数 - 速度专用）
 function SpeedInput({
   label,
@@ -76,15 +108,14 @@ export default function Calculator() {
     dddTimes: "", // 舞舞舞次数 (整数)
     windSetTimes: "", // 风套触发次数 (整数)
   });
+  const atoi = (str: string) => parseInt(str, 10) || 0;
+  const atof = (str: string) => parseFloat(str) || 0;
 
   // ========== 阿哈速度 - 计算逻辑 ==========
   const calculateAhaSpeed = () => {
-    const atof = (str: string) => parseFloat(str) || 0;
-    const sortedSpeeds = (
-      [speeds.v1, speeds.v2, speeds.v3, speeds.v4]
+    const sortedSpeeds = [speeds.v1, speeds.v2, speeds.v3, speeds.v4]
       .map(atof)
-      .sort((a, b) => b - a)
-    );
+      .sort((a, b) => b - a);
     const multipliers = [0.2, 0.1, 0.05, 0.02];
     return (
       80 +
@@ -97,8 +128,6 @@ export default function Calculator() {
   const [isVonwacqEnabled, setIsVonwacqEnabled] = useState(false);
   // ========== 最低速度 - 计算逻辑 ==========
   const calculateMinSpeed = () => {
-    const atoi = (str: string) => parseInt(str, 10) || 0;
-
     const av = atoi(params.av);
     const t = atoi(params.t);
     const s = atoi(params.s);
@@ -131,6 +160,42 @@ export default function Calculator() {
 
   const ahaResult = calculateAhaSpeed();
   const minSpeedResult = calculateMinSpeed();
+  // ========== 效果命中计算器 状态 ==========
+  const [isHitModeEnabled, setIsHitModeEnabled] = useState(false);
+  const [hitParams, setHitParams] = useState({
+    baseChance: "",
+    effectHit: "",
+    effectRes: "40", // 默认 40%
+    specialRes: "0", // 默认 0
+  });
+
+  // 输入处理（支持小数）
+  const handleHitParamsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setHitParams((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // 模式1：计算命中概率
+  const calculateHitChance = () => {
+    const [base, hit, res, special] = [
+      hitParams.baseChance,
+      hitParams.effectHit,
+      hitParams.effectRes,
+      hitParams.specialRes,
+    ]
+      .map(atof)
+      .map((val) => val / 100);
+    return Math.min(base * (1 + hit) * (1 - res) * (1 - special), 1) * 100;
+  };
+
+  // 模式2：计算 100% 命中所需效果命中
+  const calcRequiredHitRatePercent = () => {
+    const base = atof(hitParams.baseChance) / 100;
+    if (base === 0) return 0;
+    return Math.max(1 / (base * 0.6) - 1, 0) * 100;
+  };
 
   return (
     <div className="max-w-7xl mx-auto mt-10 px-4">
@@ -253,6 +318,114 @@ export default function Calculator() {
               (若有翁瓦克则-4000) ) / AV
             </p>
           </div>
+        </div>
+        {/* 效果命中计算器 */}
+        <div className="bg-gray-800 rounded-2xl shadow p-6 flex-1">
+          <h3 className="text-xl font-bold text-white mb-4">效果命中计算器</h3>
+
+          {/* 模式切换开关（占满整行） */}
+          <button
+            type="button"
+            className={`w-full p-3 rounded-lg cursor-pointer transition-all mb-5 ${
+              isHitModeEnabled
+                ? "bg-blue-900/40 border border-blue-500/30"
+                : "bg-gray-700"
+            }`}
+            onClick={() => setIsHitModeEnabled(!isHitModeEnabled)}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <input
+                type="hidden"
+                id="hitMode"
+                checked={isHitModeEnabled}
+                onChange={(e) => setIsHitModeEnabled(e.target.checked)}
+                className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 cursor-pointer"
+              />
+              <label
+                htmlFor="hitMode"
+                className="text-white font-medium cursor-pointer"
+              >
+                最低效果命中计算
+                <p className="text-sm md:text-base">
+                  （输入数据单位均为%，如100表示 100%）
+                </p>
+              </label>
+            </div>
+          </button>
+
+          {/* 模式1：计算命中概率 */}
+          {!isHitModeEnabled && (
+            <>
+              <div className="flex flex-wrap gap-3 mb-6">
+                <FloatInput
+                  label="基础概率"
+                  name="baseChance"
+                  value={hitParams.baseChance}
+                  onChange={handleHitParamsChange}
+                />
+                <FloatInput
+                  label="效果命中"
+                  name="effectHit"
+                  value={hitParams.effectHit}
+                  onChange={handleHitParamsChange}
+                />
+                <FloatInput
+                  label="效果抵抗"
+                  name="effectRes"
+                  value={hitParams.effectRes}
+                  onChange={handleHitParamsChange}
+                  placeholder="40"
+                />
+                <FloatInput
+                  label="特殊抵抗"
+                  name="specialRes"
+                  value={hitParams.specialRes}
+                  onChange={handleHitParamsChange}
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="mt-6 p-4 bg-gray-700 rounded-xl">
+                <p className="text-gray-300 text-sm">最终命中概率</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {calculateHitChance().toFixed(2)}%
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  概率 = 基础概率 × (1+命中) × (1-抵抗) × (1-特殊抵抗)
+                </p>
+              </div>
+            </>
+          )}
+
+          {/* 模式2：计算所需最低效果命中 */}
+          {isHitModeEnabled && (
+            <>
+              <div className="flex flex-wrap gap-3 mb-6">
+                <FloatInput
+                  label="基础概率"
+                  name="baseChance"
+                  value={hitParams.baseChance}
+                  onChange={handleHitParamsChange}
+                />
+              </div>
+
+              <div className="mt-6 p-4 bg-gray-700 rounded-xl">
+                <p className="text-gray-300 text-sm">所需最低效果命中</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {(() => {
+                    const r = calcRequiredHitRatePercent();
+                    return r > 999
+                      ? ">999"
+                      : r.toFixed(2);
+                  })()}
+                  %
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  目标：100%命中 | 效果抵抗固定 40%
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
