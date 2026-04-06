@@ -1,4 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
+
+// 字符串转整数和浮点数的工具函数，空字符串或非数字输入时返回 0
+const atoi = (str: string) => parseInt(str, 10) || 0;
+const atof = (str: string) => parseFloat(str) || 0;
 
 // 浮点数输入（效果命中专用）
 function FloatInput({
@@ -96,6 +100,37 @@ function IntegerInput({
   );
 }
 
+// 统一开关组件（语义化 + 无 lint 错误 + 隐藏 input）
+function ToggleSwitch({
+  label,
+  checked,
+  onChange,
+  addedHTML = "",
+}: {
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+  addedHTML: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={onChange}
+      className={`p-3 rounded-lg w-full cursor-pointer transition-all mb-5 select-none border ${
+        checked
+          ? "bg-blue-900/40 border-blue-500/30"
+          : "bg-gray-700 border-gray-600"
+      }`}
+    >
+      {label}
+      {/** biome-ignore lint/security/noDangerouslySetInnerHtml: the security of addedHTML can be ensured */}
+      <div dangerouslySetInnerHTML={{ __html: addedHTML }} />
+    </button>
+  );
+}
+
 export default function Calculator() {
   // ========== 阿哈速度计算器 状态 ==========
   const [speeds, setSpeeds] = useState({ v1: "", v2: "", v3: "", v4: "" });
@@ -108,31 +143,25 @@ export default function Calculator() {
     dddTimes: "", // 舞舞舞次数 (整数)
     windSetTimes: "", // 风套触发次数 (整数)
   });
-  const atoi = (str: string) => parseInt(str, 10) || 0;
-  const atof = (str: string) => parseFloat(str) || 0;
 
   // ========== 阿哈速度 - 计算逻辑 ==========
   const calculateAhaSpeed = () => {
-    const sortedSpeeds = [speeds.v1, speeds.v2, speeds.v3, speeds.v4]
-      .map(atof)
-      .sort((a, b) => b - a);
     const multipliers = [0.2, 0.1, 0.05, 0.02];
-    return (
-      80 +
-      sortedSpeeds.reduce(
-        (sum, speed, index) => sum + speed * multipliers[index],
-        0,
-      )
-    );
+    return [speeds.v1, speeds.v2, speeds.v3, speeds.v4]
+      .map(atof)
+      .sort((a, b) => b - a)
+      .reduce((sum, speed, index) => sum + speed * multipliers[index], 80);
   };
   const [isVonwacqEnabled, setIsVonwacqEnabled] = useState(false);
   // ========== 最低速度 - 计算逻辑 ==========
   const calculateMinSpeed = () => {
-    const av = atoi(params.av);
-    const t = atoi(params.t);
-    const s = atoi(params.s);
-    const dddTimes = atoi(params.dddTimes);
-    const windSetTimes = atoi(params.windSetTimes);
+    const [av, t, s, dddTimes, windSetTimes] = [
+      params.av,
+      params.t,
+      params.s,
+      params.dddTimes,
+      params.windSetTimes,
+    ].map(atoi);
 
     if (av === 0) return 0;
 
@@ -261,18 +290,12 @@ export default function Calculator() {
             </p>
           </div>
           {/* Vonwacq 开关 UI */}
-          <div className="flex items-center gap-3 mb-5">
-            <input
-              type="checkbox"
-              id="vonwacq"
-              checked={isVonwacqEnabled}
-              onChange={() => setIsVonwacqEnabled(!isVonwacqEnabled)}
-              className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 cursor-pointer"
-            />
-            <label htmlFor="vonwacq" className="text-white cursor-pointer">
-              翁瓦克
-            </label>
-          </div>
+          <ToggleSwitch
+            label="翁瓦克"
+            checked={isVonwacqEnabled}
+            onChange={() => setIsVonwacqEnabled(!isVonwacqEnabled)}
+            addedHTML=""
+          />
           {/* 整数输入区域 */}
           <div className="flex flex-wrap gap-3 mb-6">
             <IntegerInput
@@ -314,8 +337,8 @@ export default function Calculator() {
               {minSpeedResult.toFixed(2)}
             </p>
             <p className="text-xs text-gray-400 mt-1">
-              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套次数 +
-              (若有翁瓦克则-4000) ) / AV
+              V = (T×10000 - (1400+200S)×舞舞舞次数 - 2500×风套次数
+              {isVonwacqEnabled && " -4000"}) / AV
             </p>
           </div>
         </div>
@@ -324,34 +347,14 @@ export default function Calculator() {
           <h3 className="text-xl font-bold text-white mb-4">效果命中计算器</h3>
 
           {/* 模式切换开关（占满整行） */}
-          <button
-            type="button"
-            className={`w-full p-3 rounded-lg cursor-pointer transition-all mb-5 ${
-              isHitModeEnabled
-                ? "bg-blue-900/40 border border-blue-500/30"
-                : "bg-gray-700"
-            }`}
-            onClick={() => setIsHitModeEnabled(!isHitModeEnabled)}
-          >
-            <div className="flex items-center justify-center gap-2">
-              <input
-                type="hidden"
-                id="hitMode"
-                checked={isHitModeEnabled}
-                onChange={(e) => setIsHitModeEnabled(e.target.checked)}
-                className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 cursor-pointer"
-              />
-              <label
-                htmlFor="hitMode"
-                className="text-white font-medium cursor-pointer"
-              >
-                最低效果命中计算
-                <p className="text-sm md:text-base">
-                  （输入数据单位均为%，如100表示 100%）
-                </p>
-              </label>
-            </div>
-          </button>
+          <ToggleSwitch
+            label="最低效果命中计算"
+            checked={isHitModeEnabled}
+            onChange={() => setIsHitModeEnabled(!isHitModeEnabled)}
+            addedHTML={
+              '<p class="text-sm md:text-base">（输入数据单位均为%，如100表示 100%）</p>'
+            }
+          />
 
           {/* 模式1：计算命中概率 */}
           {!isHitModeEnabled && (
@@ -414,9 +417,7 @@ export default function Calculator() {
                 <p className="text-2xl font-bold text-white mt-1">
                   {(() => {
                     const r = calcRequiredHitRatePercent();
-                    return r > 999
-                      ? ">999"
-                      : r.toFixed(2);
+                    return r > 999 ? ">999" : r.toFixed(2);
                   })()}
                   %
                 </p>
