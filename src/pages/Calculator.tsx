@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 
 // 字符串转整数和浮点数的工具函数，空字符串或非数字输入时返回 0
 const atoi = (str: string) => parseInt(str, 10) || 0;

@@ -44,6 +44,7 @@ export default function Sidebar({ open, close }: SidebarProps) {
           <LinkButton to="/futuredate" label="未来日期" />
           <LinkButton to="/links" label="测试服链接" />
           <LinkButton to="/calculator" label="计算器" />
+          <LinkButton to="/action-sequence" label="行动排轴器" />
         </div>
       </div>
     </>

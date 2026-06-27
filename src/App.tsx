@@ -8,6 +8,7 @@ import Formula from "./pages/Formula.tsx";
 import FutureDate from "./pages/FutureDate.tsx";
 import Links from "./pages/Links.tsx";
 import Calculator from "./pages/Calculator.tsx";
+import ActionSequence from "./pages/ActionSequence.tsx";
 import 'katex/dist/katex.min.css';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/futuredate" element={<FutureDate />} />
             <Route path="/links" element={<Links />} />
             <Route path="/calculator" element={<Calculator />} />
+            <Route path="/action-sequence" element={<ActionSequence />} />
           </Routes>
         </main>
       </div>
