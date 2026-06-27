@@ -49,6 +49,7 @@ function canBeAdvancedByDance(character: CharacterConfig) {
 }
 
 function getTargetDefaultName(kind: TargetKind, index: number) {
+  if (kind === "非忆灵") return `召唤物 ${index + 1}`;
   return `${kind} ${index + 1}`;
 }
 
