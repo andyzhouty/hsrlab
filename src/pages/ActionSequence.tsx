@@ -28,12 +28,13 @@ type SavedData = {
   characters: CharacterConfig[];
   resources: string[];
   overrides: Record<string, string>;
+  ultOverrides: Record<string, boolean>;
   resourceValues: Record<string, Record<string, string>>;
 };
 
-type TargetKind = "角色" | "召唤物" | "敌人";
+type TargetKind = "角色" | "忆灵" | "非忆灵" | "敌人";
 
-const targetKinds: TargetKind[] = ["角色", "召唤物", "敌人"];
+const targetKinds: TargetKind[] = ["角色", "忆灵", "非忆灵", "敌人"];
 
 function isCharacterTarget(character: CharacterConfig) {
   return character.kind === "角色";
@@ -41,6 +42,10 @@ function isCharacterTarget(character: CharacterConfig) {
 
 function isEnemyTarget(kind: TargetKind | undefined) {
   return kind === "敌人";
+}
+
+function canBeAdvancedByDance(character: CharacterConfig) {
+  return character.kind === "角色" || character.kind === "忆灵";
 }
 
 function getTargetDefaultName(kind: TargetKind, index: number) {
@@ -112,6 +117,7 @@ function simulateActions(
   characters: CharacterConfig[],
   limit: number,
   overrides: Record<string, string>,
+  ultOverrides: Record<string, boolean>,
 ) {
   const activeCharacters = characters.filter(
     (character) => toPositiveNumber(character.speed) > 0,
@@ -154,7 +160,11 @@ function simulateActions(
     const { character } = state;
     const speed = toPositiveNumber(character.speed);
     const actionNo = state.actionNo;
-    const ultimateAction = isUltimateAction(character, actionNo);
+    const defaultUltimateAction = isUltimateAction(character, actionNo);
+    const ultimateAction =
+      isCharacterTarget(character) && ultOverrides[next.key] !== undefined
+        ? ultOverrides[next.key]
+        : defaultUltimateAction;
 
     actions.push({
       key: next.key,
@@ -174,6 +184,7 @@ function simulateActions(
     if (isCharacterTarget(character) && character.hasDance && ultimateAction) {
       const advance = 2400 / speed;
       for (const teammate of states) {
+        if (!canBeAdvancedByDance(teammate.character)) continue;
         teammate.nextActionValue = Math.max(
           next.actionValue,
           teammate.nextActionValue - advance,
@@ -272,6 +283,7 @@ export default function ActionSequence() {
   const [customLimit, setCustomLimit] = useState("");
   const [resources, setResources] = useState<string[]>(["战技点"]);
   const [overrides, setOverrides] = useState<Record<string, string>>({});
+  const [ultOverrides, setUltOverrides] = useState<Record<string, boolean>>({});
   const [resourceValues, setResourceValues] = useState<
     Record<string, Record<string, string>>
   >({});
@@ -289,8 +301,8 @@ export default function ActionSequence() {
   }, [customLimit, limitPreset]);
 
   const actions = useMemo(
-    () => simulateActions(characters, actionLimit, overrides),
-    [characters, actionLimit, overrides],
+    () => simulateActions(characters, actionLimit, overrides, ultOverrides),
+    [characters, actionLimit, overrides, ultOverrides],
   );
   const characterNames = useMemo(
     () =>
@@ -330,10 +342,20 @@ export default function ActionSequence() {
   };
 
   const removeTarget = (id: string) => {
-    setCharacters((prev) => prev.filter((character) => character.id !== id));
+    if (characters.length <= 1) return;
+    setCharacters((prev) =>
+      prev.length <= 1 ? prev : prev.filter((character) => character.id !== id),
+    );
     setOverrides((prev) =>
       Object.fromEntries(
         Object.entries(prev).filter(([actionKey]) => !actionKey.startsWith(`${id}-`)),
+      ),
+    );
+    setUltOverrides((prev) =>
+      Object.fromEntries(
+        Object.entries(prev).filter(
+          ([actionKey]) => !actionKey.startsWith(`${id}-`),
+        ),
       ),
     );
     setResourceValues((prev) =>
@@ -356,6 +378,14 @@ export default function ActionSequence() {
         ...(prev[actionKey] ?? {}),
         [resourceName]: value,
       },
+    }));
+  };
+
+  const toggleUltimateOverride = (action: GeneratedAction) => {
+    if (characterKinds[action.characterId] !== "角色") return;
+    setUltOverrides((prev) => ({
+      ...prev,
+      [action.key]: !action.isUltimateAction,
     }));
   };
 
@@ -394,6 +424,7 @@ export default function ActionSequence() {
     characters: characters.map(withoutCharacterOnlyEffects),
     resources,
     overrides,
+    ultOverrides,
     resourceValues,
   });
 
@@ -496,6 +527,7 @@ export default function ActionSequence() {
           : [],
       );
       setOverrides(parsed.overrides ?? {});
+      setUltOverrides(parsed.ultOverrides ?? {});
       setResourceValues(parsed.resourceValues ?? {});
       setMessage("导入成功。");
     } catch {
@@ -652,15 +684,14 @@ export default function ActionSequence() {
                     />
                   </div>
                 )}
-                {index >= defaultCharacters.length && (
-                  <button
-                    type="button"
-                    onClick={() => removeTarget(character.id)}
-                    className="mt-3 h-10 w-full rounded-lg border border-red-500/40 text-sm font-medium text-red-200 hover:bg-red-950/30"
-                  >
-                    删除目标
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => removeTarget(character.id)}
+                  disabled={characters.length <= 1}
+                  className="mt-3 h-10 w-full rounded-lg border border-red-500/40 text-sm font-medium text-red-200 hover:bg-red-950/30 disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-500 disabled:hover:bg-transparent"
+                >
+                  删除目标
+                </button>
               </div>
           ))}
           <button
@@ -774,11 +805,12 @@ export default function ActionSequence() {
                   {actions.length}
                 </p>
               </div>
-              <table className="w-full table-fixed divide-y divide-gray-700 text-left text-sm">
+              <table className="w-full table-auto divide-y divide-gray-700 text-left text-sm">
                 <colgroup>
                   <col className="w-12" />
-                  <col className={resources.length >= 4 ? "w-32" : "w-40"} />
+                  <col className="w-[1%]" />
                   <col className="w-28" />
+                  <col className="w-16" />
                   {resources.map((_, index) => (
                     <col key={`resource-col-${index}`} />
                   ))}
@@ -788,11 +820,14 @@ export default function ActionSequence() {
                     <th className="w-12 min-w-12 max-w-12 whitespace-nowrap px-2 py-3 font-semibold">
                       序号
                     </th>
-                    <th className="whitespace-nowrap px-3 py-3 font-semibold">
+                    <th className="w-[1%] whitespace-nowrap px-3 py-3 font-semibold">
                       角色
                     </th>
                     <th className="whitespace-nowrap px-2 py-3 font-semibold">
                       行动值
+                    </th>
+                    <th className="whitespace-nowrap px-2 py-3 font-semibold">
+                      大招
                     </th>
                     {resources.map((resource, index) => (
                       <th
@@ -809,7 +844,7 @@ export default function ActionSequence() {
                   {actions.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={3 + resources.length}
+                        colSpan={4 + resources.length}
                         className="px-4 py-10 text-center text-gray-400"
                       >
                         请至少填写一个有效速度。
@@ -837,7 +872,7 @@ export default function ActionSequence() {
                           >
                             {index + 1}
                           </td>
-                          <td className="whitespace-nowrap px-3 py-3">
+                          <td className="w-[1%] max-w-32 whitespace-nowrap px-3 py-3">
                             <div
                               className="truncate font-medium text-white"
                               title={characterNames[action.characterId]}
@@ -850,7 +885,6 @@ export default function ActionSequence() {
                               }`}
                             >
                               第 {action.actionNo} 动
-                              {action.isUltimateAction ? " / 大招触发" : ""}
                             </div>
                           </td>
                           <td className="px-2 py-3">
@@ -875,6 +909,22 @@ export default function ActionSequence() {
                               }}
                               className="h-10 w-full rounded-lg border border-gray-600 bg-gray-700 px-2 font-mono text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                          </td>
+                          <td className="px-2 py-3">
+                            <button
+                              type="button"
+                              role="switch"
+                              aria-checked={action.isUltimateAction}
+                              disabled={characterKinds[action.characterId] !== "角色"}
+                              onClick={() => toggleUltimateOverride(action)}
+                              className={`h-10 w-full rounded-lg border text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
+                                action.isUltimateAction
+                                  ? "border-amber-400/60 bg-amber-500/20 text-amber-100"
+                                  : "border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600"
+                              }`}
+                            >
+                              {action.isUltimateAction ? "开" : "关"}
+                            </button>
                           </td>
                           {resources.map((resource, resourceIndex) => (
                             <td
